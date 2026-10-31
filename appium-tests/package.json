@@ -1,0 +1,14 @@
+{
+  "name": "genomics-appium-mobile-e2e-tests",
+  "version": "1.0.0",
+  "description": "Appium Mobile E2E Automation Test Suite for GenomicsAI Android Application",
+  "scripts": {
+    "test": "node tests/mobile-e2e-tests.js",
+    "report": "python generate_appium_excel.py"
+  },
+  "dependencies": {
+    "webdriverio": "^8.38.0",
+    "appium": "^2.11.3"
+  }
+}
+

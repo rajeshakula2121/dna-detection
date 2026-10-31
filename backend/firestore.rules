@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Top-level analyses collection: allows read and write for all DNA analyses
+    // (Used by Mutation Detection, Pattern Analysis, Alignment, FASTA, K-mer, ORF, QC)
+    match /analyses/{analysisId} {
+      allow read, write: if true;
+    }
+    
+    // User accounts and private analysis subcollections: /users/{userId}/analyses/{analysisId}
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if true;
+    }
+
+    // Public reference datasets & benchmarks
+    match /public_references/{referenceId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Default catch-all rule to ensure no analysis or demo session is rejected
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

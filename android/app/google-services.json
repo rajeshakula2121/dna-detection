@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "944900697917",
+    "project_id": "dna-detection",
+    "storage_bucket": "dna-detection.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:944900697917:android:768f3e1e79821418d3df54",
+        "android_client_info": {
+          "package_name": "DNA_Detection.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkabg8mIR8bCkytRAx6IGlrI4bBG53eX4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

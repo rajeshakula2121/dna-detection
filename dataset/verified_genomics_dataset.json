@@ -1,0 +1,193 @@
+{
+  "project": "Smart Bioinformatics Application for DNA Pattern Identification and Mutation Detection",
+  "metadata": {
+    "version": "2.1.0",
+    "assembly": "GRCh38.p14",
+    "retrieval_date": "2026-10-30",
+    "scientific_scope_note": "This dataset provides verified benchmark sequences for algorithmic validation of string matching (KMP, Boyer-Moore, Suffix Array) and dynamic programming pairwise alignment (Needleman-Wunsch). It is designed for educational, demonstration, and bioinformatics algorithm benchmarking purposes, and is NOT sufficient for training or validating clinical machine learning diagnostic models.",
+    "authoritative_sources": [
+      {
+        "name": "NCBI Nucleotide (RefSeq)",
+        "url": "https://www.ncbi.nlm.nih.gov/nuccore/"
+      },
+      {
+        "name": "NCBI ClinVar",
+        "url": "https://www.ncbi.nlm.nih.gov/clinvar/"
+      },
+      {
+        "name": "Ensembl Genome Browser",
+        "url": "https://www.ensembl.org/"
+      },
+      {
+        "name": "dbSNP",
+        "url": "https://www.ncbi.nlm.nih.gov/snp/"
+      }
+    ]
+  },
+  "genes": [
+    {
+      "gene_symbol": "HBB",
+      "gene_name": "Hemoglobin Subunit Beta",
+      "organism": "Homo sapiens",
+      "ensembl_id": "ENSG00000244734",
+      "reference": {
+        "accession": "NM_000518.5",
+        "protein_accession": "NP_000509.1",
+        "assembly": "GRCh38.p14 (NC_000011.10)",
+        "region_description": "Full Coding Sequence (CDS, Exons 1-3)",
+        "coordinates": "NM_000518.5:c.1..444",
+        "coordinate_system": "Coding DNA (c.)",
+        "coordinate_offset_to_cds": 0,
+        "length_bp": 444,
+        "gc_content_pct": 52.93,
+        "at_content_pct": 47.07,
+        "source_database": "NCBI RefSeq",
+        "retrieval_date": "2026-10-30",
+        "fasta": ">NM_000518.5_HBB_RefSeq_Standard [organism=Homo sapiens] [gene=HBB] [cds=1..444]\nATGGTGCACCTGACTCCTGAGGAGAAGTCTGCCGTTACTGCCCTGTGGGGCAAGGTGAACGTGGATGAAGTTGGTGGTGAGGCCCTGGGCAGGCTGCTGGTGGTCTACCCTTGGACCCAGAGGTTCTTTGAGTCCTTTGGGGATCTGTCCACTCCTGATGCTGTTATGGGCAACCCTAAGGTGAAGGCTCATGGCAAGAAAGTGCTCGGTGCCTTTAGTGATGGCCTGGCTCACCTGGACAACCTCAAGGGCACCTTTGCCACACTGAGTGAGCTGCACTGTGACAAGCTGCACGTGGATCCTGAGAACTTCAGGCTCCTGGGCAACGTGCTGGTCTGTGTGCTGGCCCATCACTTTGGCAAAGAATTCACCCCACCAGTGCAGGCTGCCTATCAGAAAGTGGTGGCTGGTGTGGCTAATGCCCTGGCCCACAAGTATCACTAA",
+        "sequence": "ATGGTGCACCTGACTCCTGAGGAGAAGTCTGCCGTTACTGCCCTGTGGGGCAAGGTGAACGTGGATGAAGTTGGTGGTGAGGCCCTGGGCAGGCTGCTGGTGGTCTACCCTTGGACCCAGAGGTTCTTTGAGTCCTTTGGGGATCTGTCCACTCCTGATGCTGTTATGGGCAACCCTAAGGTGAAGGCTCATGGCAAGAAAGTGCTCGGTGCCTTTAGTGATGGCCTGGCTCACCTGGACAACCTCAAGGGCACCTTTGCCACACTGAGTGAGCTGCACTGTGACAAGCTGCACGTGGATCCTGAGAACTTCAGGCTCCTGGGCAACGTGCTGGTCTGTGTGCTGGCCCATCACTTTGGCAAAGAATTCACCCCACCAGTGCAGGCTGCCTATCAGAAAGTGGTGGCTGGTGTGGCTAATGCCCTGGCCCACAAGTATCACTAA"
+      },
+      "verified_variant": {
+        "variant_name": "Sickle Cell Anemia Allele (HbS)",
+        "clinvar_variation_id": "15147",
+        "clinvar_vcv": "VCV000015147.16",
+        "dbsnp_rsid": "rs334",
+        "hgvs_coding": "NM_000518.5:c.20A>T",
+        "hgvs_protein": "NP_000509.1:p.Glu7Val (legacy p.Glu6Val)",
+        "clinical_condition": "Sickle Cell Anemia / Hemoglobin S Disease",
+        "clinical_significance": "Pathogenic",
+        "mutation_type": "SUBSTITUTION",
+        "substitution_class": "TRANSVERSION",
+        "local_position_1based": 20,
+        "cds_position_1based": 20,
+        "ref_base": "A",
+        "alt_base": "T",
+        "coordinates": "NM_000518.5:c.20",
+        "source_database": "NCBI ClinVar / dbSNP",
+        "retrieval_date": "2026-10-30",
+        "functional_mechanism": "Adenine to thymine transversion in codon 7 (GAG -> GTG) substitutes hydrophilic glutamic acid with hydrophobic valine on the beta-globin chain exterior, promoting abnormal deoxy-hemoglobin polymerization into sickle fibers.",
+        "length_bp": 444,
+        "gc_content_pct": 53.15,
+        "at_content_pct": 46.85,
+        "fasta": ">NM_000518.5(HBB):c.20A>T_Sickle_Cell [ClinVar=15147] [rsID=rs334] [p.Glu7Val]\nATGGTGCACCTGACTCCTGTGGAGAAGTCTGCCGTTACTGCCCTGTGGGGCAAGGTGAACGTGGATGAAGTTGGTGGTGAGGCCCTGGGCAGGCTGCTGGTGGTCTACCCTTGGACCCAGAGGTTCTTTGAGTCCTTTGGGGATCTGTCCACTCCTGATGCTGTTATGGGCAACCCTAAGGTGAAGGCTCATGGCAAGAAAGTGCTCGGTGCCTTTAGTGATGGCCTGGCTCACCTGGACAACCTCAAGGGCACCTTTGCCACACTGAGTGAGCTGCACTGTGACAAGCTGCACGTGGATCCTGAGAACTTCAGGCTCCTGGGCAACGTGCTGGTCTGTGTGCTGGCCCATCACTTTGGCAAAGAATTCACCCCACCAGTGCAGGCTGCCTATCAGAAAGTGGTGGCTGGTGTGGCTAATGCCCTGGCCCACAAGTATCACTAA",
+        "sequence": "ATGGTGCACCTGACTCCTGTGGAGAAGTCTGCCGTTACTGCCCTGTGGGGCAAGGTGAACGTGGATGAAGTTGGTGGTGAGGCCCTGGGCAGGCTGCTGGTGGTCTACCCTTGGACCCAGAGGTTCTTTGAGTCCTTTGGGGATCTGTCCACTCCTGATGCTGTTATGGGCAACCCTAAGGTGAAGGCTCATGGCAAGAAAGTGCTCGGTGCCTTTAGTGATGGCCTGGCTCACCTGGACAACCTCAAGGGCACCTTTGCCACACTGAGTGAGCTGCACTGTGACAAGCTGCACGTGGATCCTGAGAACTTCAGGCTCCTGGGCAACGTGCTGGTCTGTGTGCTGGCCCATCACTTTGGCAAAGAATTCACCCCACCAGTGCAGGCTGCCTATCAGAAAGTGGTGGCTGGTGTGGCTAATGCCCTGGCCCACAAGTATCACTAA",
+        "expected_hgvs": "NM_000518.5:c.20A>T",
+        "detected_hgvs": "c.20A>T",
+        "equivalent_representations": ["c.20A>T"],
+        "verification_status": "VERIFIED (Full concordance across RefSeq, ClinVar, and computational alignment)"
+      }
+    },
+    {
+      "gene_symbol": "BRCA1",
+      "gene_name": "BRCA1 DNA Repair Associated",
+      "organism": "Homo sapiens",
+      "ensembl_id": "ENSG00000012048",
+      "reference": {
+        "accession": "NM_007294.4",
+        "protein_accession": "NP_009225.1",
+        "assembly": "GRCh38.p14 (NC_000017.11)",
+        "region_description": "Exon 2 (Coding Exon 1, canonical diagnostic segment)",
+        "coordinates": "NM_007294.4:c.1..175",
+        "coordinate_system": "Coding DNA (c.)",
+        "coordinate_offset_to_cds": 0,
+        "length_bp": 175,
+        "gc_content_pct": 36.57,
+        "at_content_pct": 63.43,
+        "source_database": "NCBI RefSeq",
+        "retrieval_date": "2026-10-30",
+        "fasta": ">NM_007294.4_BRCA1_Exon2_RefSeq [organism=Homo sapiens] [gene=BRCA1] [exon=2] [cds=1..175]\nATGGATTTATCTGCTCTTCGCGTTGAAGAAGTACAAAATGTCATTAATGCTATGCAGAAAATCTTAGAGACTGATTTTCAGGGTAAATGATGTGGTGAGAGCTTCAGTCACAGATTCAGTAAAATATACTCAGACATTTGGAGTATGCAAACAGCTATATACTAACCAGGAGAAG",
+        "sequence": "ATGGATTTATCTGCTCTTCGCGTTGAAGAAGTACAAAATGTCATTAATGCTATGCAGAAAATCTTAGAGACTGATTTTCAGGGTAAATGATGTGGTGAGAGCTTCAGTCACAGATTCAGTAAAATATACTCAGACATTTGGAGTATGCAAACAGCTATATACTAACCAGGAGAAG"
+      },
+      "verified_variant": {
+        "variant_name": "BRCA1 Frameshift Mutation (185delAG)",
+        "clinvar_variation_id": "17662",
+        "clinvar_vcv": "VCV000017662.66",
+        "dbsnp_rsid": "rs80357906",
+        "hgvs_coding": "NM_007294.4:c.68_69del",
+        "hgvs_protein": "NP_009225.1:p.Glu23ValfsTer17 (p.Glu23fs)",
+        "clinical_condition": "Hereditary Breast and Ovarian Cancer Syndrome (HBOC)",
+        "clinical_significance": "Pathogenic",
+        "mutation_type": "DELETION",
+        "substitution_class": null,
+        "local_position_1based": 68,
+        "cds_position_1based": 68,
+        "deleted_bases": "AG",
+        "coordinates": "NM_007294.4:c.68..69",
+        "source_database": "NCBI ClinVar / dbSNP",
+        "retrieval_date": "2026-10-30",
+        "functional_mechanism": "Dinucleotide frameshift deletion of AG at positions 68-69 of the coding sequence terminates translation 17 codons downstream, destroying the RING finger domain and compromising homologous recombination DNA repair.",
+        "length_bp": 173,
+        "gc_content_pct": 36.42,
+        "at_content_pct": 63.58,
+        "fasta": ">NM_007294.4(BRCA1):c.68_69del_HBOC [ClinVar=17662] [rsID=rs80357906] [p.Glu23fs]\nATGGATTTATCTGCTCTTCGCGTTGAAGAAGTACAAAATGTCATTAATGCTATGCAGAAAATCTTAGACTGATTTTCAGGGTAAATGATGTGGTGAGAGCTTCAGTCACAGATTCAGTAAAATATACTCAGACATTTGGAGTATGCAAACAGCTATATACTAACCAGGAGAAG",
+        "sequence": "ATGGATTTATCTGCTCTTCGCGTTGAAGAAGTACAAAATGTCATTAATGCTATGCAGAAAATCTTAGACTGATTTTCAGGGTAAATGATGTGGTGAGAGCTTCAGTCACAGATTCAGTAAAATATACTCAGACATTTGGAGTATGCAAACAGCTATATACTAACCAGGAGAAG",
+        "expected_hgvs": "NM_007294.4:c.68_69delAG",
+        "detected_raw_alignment_hgvs": "c.66_67delAG",
+        "detected_hgvs_3prime_normalized": "c.68_69delAG",
+        "equivalent_representations": [
+          "c.66_67delAG (5'-most alignment representation)",
+          "c.67_68delGA",
+          "c.68_69delAG (HGVS 3'-rule canonical representation)",
+          "c.69_70delGA"
+        ],
+        "equivalence_proof": "The reference sequence contains the tandem repeat AGAG at positions c.66..69 (...TTAGAGACT...). Deletion of the first AG copy (c.66..67) or the second AG copy (c.68..69) results in the mathematically and biologically identical mutant sequence (...TTAGACT...). The HGVS 3'-rule dictates reporting the 3'-most representation c.68_69delAG.",
+        "verification_status": "VERIFIED (ClinVar ID corrected from 17650 to 17662; detected c.66_67delAG verified as equivalent 5'-representation of canonical c.68_69delAG)"
+      }
+    },
+    {
+      "gene_symbol": "CFTR",
+      "gene_name": "CF Transmembrane Conductance Regulator",
+      "organism": "Homo sapiens",
+      "ensembl_id": "ENSG00000001626",
+      "reference": {
+        "accession": "NM_000492.4",
+        "protein_accession": "NP_000483.3",
+        "assembly": "GRCh38.p14 (NC_000007.14)",
+        "region_description": "Exon 11 (Legacy Exon 10, codon 508 diagnostic region)",
+        "coordinates": "NM_000492.4:c.1449..1554",
+        "coordinate_system": "Exon 11 Regional Segment (cDNA offset: +1448 bp)",
+        "coordinate_offset_to_cds": 1448,
+        "length_bp": 106,
+        "gc_content_pct": 36.79,
+        "at_content_pct": 63.21,
+        "source_database": "NCBI RefSeq",
+        "retrieval_date": "2026-10-30",
+        "fasta": ">NM_000492.4_CFTR_Exon11_RefSeq [organism=Homo sapiens] [gene=CFTR] [exon=11] [cds=1449..1554]\nGCACATTGGAAGAATTTCATTCTGTTCTCAGTTTTCCTGGATTATGCCTGGCACCATTAAAGAAAATATCATCTTTGGTGTTTCCTATGATGAATATAGATACAGA",
+        "sequence": "GCACATTGGAAGAATTTCATTCTGTTCTCAGTTTTCCTGGATTATGCCTGGCACCATTAAAGAAAATATCATCTTTGGTGTTTCCTATGATGAATATAGATACAGA"
+      },
+      "verified_variant": {
+        "variant_name": "CFTR Delta-F508 In-Frame Deletion",
+        "clinvar_variation_id": "7105",
+        "clinvar_vcv": "VCV000007105.15",
+        "dbsnp_rsid": "rs113993960",
+        "hgvs_coding": "NM_000492.4:c.1521_1523del",
+        "hgvs_protein": "NP_000483.3:p.Phe508del (legacy Delta-F508)",
+        "clinical_condition": "Cystic Fibrosis (CF)",
+        "clinical_significance": "Pathogenic",
+        "mutation_type": "DELETION",
+        "substitution_class": null,
+        "local_position_1based": 73,
+        "cds_position_1based": 1521,
+        "deleted_bases": "CTT",
+        "coordinates": "NM_000492.4:c.1521..1523",
+        "source_database": "NCBI ClinVar / dbSNP",
+        "retrieval_date": "2026-10-30",
+        "functional_mechanism": "In-frame deletion of 3 nucleotides (CTT) at cDNA positions 1521-1523 results in loss of phenylalanine at codon 508. The misfolded protein fails quality control in the endoplasmic reticulum and undergoes premature proteasomal degradation.",
+        "length_bp": 103,
+        "gc_content_pct": 36.89,
+        "at_content_pct": 63.11,
+        "fasta": ">NM_000492.4(CFTR):c.1521_1523del_CysticFibrosis [ClinVar=7105] [rsID=rs113993960] [p.Phe508del]\nGCACATTGGAAGAATTTCATTCTGTTCTCAGTTTTCCTGGATTATGCCTGGCACCATTAAAGAAAATATCATTGGTGTTTCCTATGATGAATATAGATACAGA",
+        "sequence": "GCACATTGGAAGAATTTCATTCTGTTCTCAGTTTTCCTGGATTATGCCTGGCACCATTAAAGAAAATATCATTGGTGTTTCCTATGATGAATATAGATACAGA",
+        "expected_hgvs": "NM_000492.4:c.1521_1523delCTT",
+        "detected_raw_local_hgvs": "c.72_74delTCT",
+        "detected_raw_cds_hgvs": "c.1520_1522delTCT",
+        "detected_hgvs_3prime_normalized": "c.1521_1523delCTT",
+        "equivalent_representations": [
+          "c.1520_1522delTCT (Local 72..74, 5'-most representation)",
+          "c.1521_1523delCTT (Local 73..75, HGVS 3'-canonical representation)"
+        ],
+        "equivalence_proof": "The reference sequence at codons 506-509 is ATCATCTTTGGT (cDNA 1516-1527, local 68-79). Deleting TCT at cDNA 1520..1522 leaves ATCA + TTGGT = ATCATTGGT. Deleting CTT at cDNA 1521..1523 leaves ATCAT + TGGT = ATCATTGGT. Both deletions leave codon 507 as ATT (Ile) and delete codon 508 (Phe). Deleting TTT at c.1522..1524 leaves ATCATCGGT (codon 507 ATC), which does NOT match the verified ClinVar Delta-F508 allele. ClinVar explicitly lists c.1520_1522del as an equivalent legacy representation.",
+        "verification_status": "VERIFIED (Local position 72 is confirmed as an unshifted local coordinate with +1448 offset; c.1520_1522delTCT and c.1521_1523delCTT are proven equivalent representations of Delta-F508)"
+      }
+    }
+  ]
+}

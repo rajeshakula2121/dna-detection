@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GenomicsAI</string>
+    <string name="tagline">Smart Bioinformatics DNA Pattern Identification and Mutation Detection</string>
+</resources>

@@ -1,0 +1,14 @@
+{
+  "name": "genomics-selenium-e2e-tests",
+  "version": "1.0.0",
+  "description": "Selenium WebDriver E2E Automation Test Suite for GenomicsAI Web Application",
+  "scripts": {
+    "test": "node tests/login-tests.js",
+    "report": "python generate_selenium_excel.py"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.25.0",
+    "chromedriver": "^130.0.0"
+  }
+}
+

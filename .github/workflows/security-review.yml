@@ -1,0 +1,142 @@
+name: DevSecOps Backend Security Review & Vulnerability Assessment
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  security-assessment:
+    name: Backend Security Assessment & DAST/SAST Scanning
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            backend/requirements.txt
+            requirements.txt
+
+      - name: Auto-Detect Backend Stack
+        id: detect-stack
+        run: |
+          echo "### Detecting Backend Framework & Technology Stack..."
+          if [ -f "backend/requirements.txt" ] || [ -f "requirements.txt" ]; then
+            echo "STACK=python" >> $GITHUB_OUTPUT
+            if grep -qi "fastapi" backend/requirements.txt 2>/dev/null || grep -qi "fastapi" requirements.txt 2>/dev/null; then
+              echo "FRAMEWORK=fastapi" >> $GITHUB_OUTPUT
+              echo "Detected Python FastAPI Backend"
+            elif grep -qi "django" backend/requirements.txt 2>/dev/null; then
+              echo "FRAMEWORK=django" >> $GITHUB_OUTPUT
+              echo "Detected Python Django Backend"
+            else
+              echo "FRAMEWORK=flask_or_generic" >> $GITHUB_OUTPUT
+              echo "Detected Generic Python Backend"
+            fi
+          elif [ -f "package.json" ] || [ -f "backend/package.json" ]; then
+            echo "STACK=node" >> $GITHUB_OUTPUT
+            echo "Detected Node.js Backend"
+          elif [ -f "pom.xml" ]; then
+            echo "STACK=java" >> $GITHUB_OUTPUT
+            echo "Detected Java Spring Boot Backend"
+          else
+            echo "STACK=unknown" >> $GITHUB_OUTPUT
+            echo "Unknown backend stack"
+          fi
+
+      - name: Install Application & Security Tool Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f "backend/requirements.txt" ]; then
+            pip install -r backend/requirements.txt
+          elif [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          fi
+          pip install semgrep bandit pip-audit
+
+      - name: Execute SAST Static Analysis Scan (Semgrep)
+        continue-on-error: true
+        run: |
+          echo "Running Semgrep SAST rules..."
+          mkdir -p "Vulnerability Test Results"
+          semgrep scan --config auto --json --output "Vulnerability Test Results/semgrep-results.json" || true
+
+      - name: Execute SAST Static Analysis Scan (Bandit)
+        continue-on-error: true
+        run: |
+          echo "Running Bandit Python Security Linter..."
+          bandit -r backend/ -f json -o "Vulnerability Test Results/bandit-results.json" || true
+
+      - name: Execute Dependency Vulnerability Scan (pip-audit)
+        continue-on-error: true
+        run: |
+          echo "Auditing Python dependencies for known CVEs..."
+          if [ -f "backend/requirements.txt" ]; then
+            pip-audit -r backend/requirements.txt -f json -o "Vulnerability Test Results/pip-audit-results.json" || true
+          fi
+
+      - name: Execute Dynamic API Security Checks (DAST)
+        run: |
+          echo "Executing automated DAST & API security scanner..."
+          python scripts/api_security_scan.py --output "Vulnerability Test Results/dast-results.json"
+
+      - name: Generate Multi-Sheet Excel & Markdown Reports
+        run: |
+          echo "Generating executive, markdown, and Excel workbooks..."
+          python scripts/generate_security_reports.py
+
+      - name: Publish GitHub Actions Step Summary
+        run: |
+          cat "Vulnerability Test Results/executive-summary.md" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Dynamic Security Audit Findings" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Endpoint | Status | Severity |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          python -c '
+          import json
+          with open("Vulnerability Test Results/dast-results.json") as f:
+              data = json.load(f)
+          for f in data.get("findings", []):
+              print(f"| {f[\"test\"]} | `{f[\"endpoint\"]}` | **{f[\"status\"]}** | `{f[\"severity\"]}` |")
+          ' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Security Reports as Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Security-Assessment-Deliverables
+          path: |
+            Vulnerability Test Results/
+            Vulnerability Test Results/*.md
+            Vulnerability Test Results/*.xlsx
+            Vulnerability Test Results/*.json
+          retention-days: 14
+
+      - name: Security Quality Gate (Fail ONLY on Critical Vulnerabilities)
+        run: |
+          python -c '
+          import json, sys
+          with open("Vulnerability Test Results/dast-results.json") as f:
+              data = json.load(f)
+          crit_count = data.get("summary", {}).get("critical", 0)
+          print(f"Quality Gate Evaluation: {crit_count} Critical vulnerabilities identified.")
+          if crit_count > 0:
+              print("CRITICAL SECURITY QUALITY GATE FAILED:")
+              print("Unauthenticated destructive endpoints or critical vulnerabilities must be patched before release.")
+              # Non-zero exit code fails build only when Critical count > 0
+              sys.exit(1)
+          else:
+              print("Security Quality Gate PASSED (0 Critical vulnerabilities).")
+          '
+

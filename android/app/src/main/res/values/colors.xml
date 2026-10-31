@@ -1,0 +1,15 @@
+<resources>
+    <!-- Scientific Navy, Teal & Slate White Palette -->
+    <color name="navy_900">#0A192F</color>
+    <color name="navy_800">#112240</color>
+    <color name="navy_700">#172A45</color>
+    <color name="teal_600">#0D9488</color>
+    <color name="teal_500">#14B8A6</color>
+    <color name="teal_300">#5EEAD4</color>
+    <color name="slate_50">#F8FAFC</color>
+    <color name="slate_100">#F1F5F9</color>
+    <color name="slate_200">#E2E8F0</color>
+    <color name="slate_800">#1E293B</color>
+    <color name="slate_900">#0F172A</color>
+</resources>
+
