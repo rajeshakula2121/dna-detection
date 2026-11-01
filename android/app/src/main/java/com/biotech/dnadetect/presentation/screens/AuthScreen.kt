@@ -1,8 +1,16 @@
 package com.biotech.dnadetect.presentation.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -12,14 +20,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.biotech.dnadetect.presentation.theme.*
 import com.biotech.dnadetect.presentation.viewmodel.AuthViewModel
 import com.biotech.dnadetect.presentation.viewmodel.UiState
 
@@ -29,241 +38,581 @@ fun AuthScreen(
     onAuthSuccess: () -> Unit
 ) {
     var isRegisterMode by remember { mutableStateOf(false) }
+
+    // Form inputs
+    var displayName by remember { mutableStateOf("") }
+    var institution by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var showResetDialog by remember { mutableStateOf(false) }
-    var resetEmail by remember { mutableStateOf("") }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
+    var rememberMe by remember { mutableStateOf(true) }
+    var agreedTerms by remember { mutableStateOf(true) }
+    var showForgot by remember { mutableStateOf(false) }
 
     val authState by viewModel.authState.collectAsState()
     val resetState by viewModel.resetState.collectAsState()
     val scrollState = rememberScrollState()
 
+    // Automatically navigate on authentication success
     LaunchedEffect(authState) {
         if (authState is UiState.Success && viewModel.isUserLoggedIn) {
             onAuthSuccess()
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(scrollState)
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(Color(0xFFF8FAFC)) // Match web bg-slate-50
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
-        // App Icon
-        Surface(
-            modifier = Modifier.size(64.dp),
-            shape = RoundedCornerShape(16.dp),
-            color = Navy900
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(horizontal = 20.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = Icons.Default.Science,
-                    contentDescription = null,
-                    tint = Teal300,
-                    modifier = Modifier.size(36.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = if (isRegisterMode) "Create Researcher Account" else "Sign In to GenomicsAI",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        Text(
-            text = "Synchronize DNA analyses across Web and Android with Cloud Firestore",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Tab Selector (Sign In vs Register)
-        TabRow(
-            selectedTabIndex = if (isRegisterMode) 1 else 0,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Tab(
-                selected = !isRegisterMode,
-                onClick = { isRegisterMode = false },
-                text = { Text("Sign In", fontWeight = FontWeight.Bold) }
-            )
-            Tab(
-                selected = isRegisterMode,
-                onClick = { isRegisterMode = true },
-                text = { Text("Register", fontWeight = FontWeight.Bold) }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Error Banner
-        if (authState is UiState.Error) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = ThymineRed.copy(alpha = 0.12f)),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+            // ======================== BRAND HEADER ========================
+            // Circular Navy badge with teal glowing border
+            Surface(
+                modifier = Modifier.size(56.dp),
+                shape = CircleShape,
+                color = Color(0xFF0B132B),
+                border = BorderStroke(2.dp, Color(0xFF2DD4BF)),
+                shadowElevation = 6.dp
             ) {
-                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.ErrorOutline, contentDescription = null, tint = ThymineRed)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = (authState as UiState.Error).message,
-                        color = ThymineRed,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            }
-        }
-
-        // Email Field
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email Address") },
-            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Password Field
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-            trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                        contentDescription = "Toggle password"
+                        imageVector = Icons.Default.Biotech,
+                        contentDescription = "GenomicsAI Icon",
+                        tint = Color(0xFF2DD4BF),
+                        modifier = Modifier.size(32.dp)
                     )
                 }
-            },
-            singleLine = true,
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-        )
-
-        // Confirm Password (Register Mode only)
-        if (isRegisterMode) {
-            Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password") },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
-        }
-
-        // Forgot Password Action (Sign In mode)
-        if (!isRegisterMode) {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                TextButton(onClick = {
-                    resetEmail = email
-                    showResetDialog = true
-                }) {
-                    Text("Forgot Password?", fontSize = 12.sp, color = Teal600)
-                }
             }
-        } else {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
 
-        // Submit Button
-        Button(
-            onClick = {
-                if (isRegisterMode) {
-                    viewModel.register(email, password, confirmPassword)
-                } else {
-                    viewModel.login(email, password)
-                }
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Teal600),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.fillMaxWidth().height(48.dp)
-        ) {
-            if (authState is UiState.Loading) {
-                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-            } else {
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Title: GenomicsAI
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = if (isRegisterMode) "Create Account" else "Sign In",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp
+                    text = "Genomics",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFF0F172A),
+                    letterSpacing = (-0.5).sp
+                )
+                Text(
+                    text = "AI",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFF0D9488),
+                    letterSpacing = (-0.5).sp
                 )
             }
-        }
 
+            // Category Subtitle
+            Text(
+                text = "BIOINFORMATICS ANALYSIS PLATFORM",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF0D9488),
+                letterSpacing = 2.sp,
+                modifier = Modifier.padding(top = 2.dp)
+            )
 
-    }
+            // Dynamic Description
+            Text(
+                text = if (isRegisterMode) {
+                    "Create a researcher workspace to store sequence pipelines and variant findings."
+                } else {
+                    "Sign in to access your genomic sequence repository and analysis pipelines."
+                },
+                fontSize = 12.sp,
+                color = Color(0xFF64748B),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(horizontal = 24.dp, vertical = 6.dp)
+            )
 
-    // Password Reset Dialog
-    if (showResetDialog) {
-        AlertDialog(
-            onDismissRequest = { showResetDialog = false },
-            title = { Text("Reset Password", fontWeight = FontWeight.Bold) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Enter your registered email address to receive a secure Firebase password reset link.",
-                        fontSize = 12.sp
-                    )
-                    OutlinedTextField(
-                        value = resetEmail,
-                        onValueChange = { resetEmail = it },
-                        label = { Text("Email Address") },
-                        singleLine = true,
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ======================== AUTH CARD ========================
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(22.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    // Segmented Mode Switcher (Pill Tabs)
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(0xFFF1F5F9),
                         modifier = Modifier.fillMaxWidth()
-                    )
+                    ) {
+                        Row(modifier = Modifier.padding(4.dp)) {
+                            // Sign In Tab
+                            Surface(
+                                shape = RoundedCornerShape(9.dp),
+                                color = if (!isRegisterMode) Color.White else Color.Transparent,
+                                shadowElevation = if (!isRegisterMode) 1.dp else 0.dp,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(9.dp))
+                                    .clickable {
+                                        isRegisterMode = false
+                                        viewModel.clearError()
+                                    }
+                            ) {
+                                Text(
+                                    text = "Sign In",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (!isRegisterMode) Color(0xFF0F766E) else Color(0xFF64748B),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(vertical = 9.dp)
+                                )
+                            }
 
+                            // Create Account Tab
+                            Surface(
+                                shape = RoundedCornerShape(9.dp),
+                                color = if (isRegisterMode) Color.White else Color.Transparent,
+                                shadowElevation = if (isRegisterMode) 1.dp else 0.dp,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(9.dp))
+                                    .clickable {
+                                        isRegisterMode = true
+                                        viewModel.clearError()
+                                    }
+                            ) {
+                                Text(
+                                    text = "Create Account",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isRegisterMode) Color(0xFF0F766E) else Color(0xFF64748B),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(vertical = 9.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    // Error Banner (matches web rose-50)
+                    if (authState is UiState.Error) {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFFFFF1F2),
+                            border = BorderStroke(1.dp, Color(0xFFFECDD3)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ErrorOutline,
+                                    contentDescription = null,
+                                    tint = Color(0xFFE11D48),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = (authState as UiState.Error).message,
+                                    color = Color(0xFF9F1239),
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
+
+                    // Reset Link Success Banner (matches web emerald-50)
                     if (resetState is UiState.Success) {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFFECFDF5),
+                            border = BorderStroke(1.dp, Color(0xFFA7F3D0)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = null,
+                                    tint = Color(0xFF059669),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = (resetState as UiState.Success).data,
+                                    color = Color(0xFF065F46),
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
+
+                    // ======================== FORM FIELDS ========================
+                    // 1. Researcher Name (Register mode only)
+                    if (isRegisterMode) {
+                        Column {
+                            Text(
+                                text = "RESEARCHER NAME",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF334155),
+                                letterSpacing = 0.5.sp,
+                                modifier = Modifier.padding(bottom = 6.dp)
+                            )
+                            OutlinedTextField(
+                                value = displayName,
+                                onValueChange = { displayName = it },
+                                placeholder = { Text("Dr. Jane Doe", color = Color(0xFF94A3B8), fontSize = 13.sp) },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Person, contentDescription = null, tint = Color(0xFF94A3B8))
+                                },
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFF0D9488),
+                                    unfocusedBorderColor = Color(0xFFE2E8F0),
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        // 2. Institution / Lab
+                        Column {
+                            Text(
+                                text = "INSTITUTION / LAB",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF334155),
+                                letterSpacing = 0.5.sp,
+                                modifier = Modifier.padding(bottom = 6.dp)
+                            )
+                            OutlinedTextField(
+                                value = institution,
+                                onValueChange = { institution = it },
+                                placeholder = { Text("Genomics Research Institute", color = Color(0xFF94A3B8), fontSize = 13.sp) },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Business, contentDescription = null, tint = Color(0xFF94A3B8))
+                                },
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFF0D9488),
+                                    unfocusedBorderColor = Color(0xFFE2E8F0),
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+
+                    // 3. Work Email Address
+                    Column {
                         Text(
-                            text = (resetState as UiState.Success).data,
-                            color = Teal600,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
+                            text = "WORK EMAIL ADDRESS",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF334155),
+                            letterSpacing = 0.5.sp,
+                            modifier = Modifier.padding(bottom = 6.dp)
                         )
-                    } else if (resetState is UiState.Error) {
-                        Text(
-                            text = (resetState as UiState.Error).message,
-                            color = ThymineRed,
-                            fontSize = 12.sp
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            placeholder = { Text("researcher@bioinstitute.edu", color = Color(0xFF94A3B8), fontSize = 13.sp) },
+                            leadingIcon = {
+                                Icon(Icons.Default.Email, contentDescription = null, tint = Color(0xFF94A3B8))
+                            },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFF0D9488),
+                                unfocusedBorderColor = Color(0xFFE2E8F0),
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White
+                            ),
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = { viewModel.sendPasswordReset(resetEmail) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Teal600)
-                ) {
-                    Text("Send Reset Link")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showResetDialog = false }) {
-                    Text("Close")
+
+                    // 4. Password
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "PASSWORD",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF334155),
+                                letterSpacing = 0.5.sp
+                            )
+                            if (!isRegisterMode) {
+                                Text(
+                                    text = "Forgot password?",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF0D9488),
+                                    modifier = Modifier
+                                        .clickable { showForgot = !showForgot }
+                                        .padding(vertical = 2.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(6.dp))
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            placeholder = { Text("••••••••", color = Color(0xFF94A3B8), fontSize = 13.sp) },
+                            leadingIcon = {
+                                Icon(Icons.Default.Lock, contentDescription = null, tint = Color(0xFF94A3B8))
+                            },
+                            trailingIcon = {
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(
+                                        imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                        contentDescription = "Toggle password visibility",
+                                        tint = Color(0xFF94A3B8)
+                                    )
+                                }
+                            },
+                            singleLine = true,
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFF0D9488),
+                                unfocusedBorderColor = Color(0xFFE2E8F0),
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    // Inline Forgot Password Box
+                    AnimatedVisibility(
+                        visible = showForgot && !isRegisterMode,
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFFF8FAFC),
+                            border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = "Enter your email above and tap below to receive a password reset link:",
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF64748B)
+                                )
+                                TextButton(
+                                    onClick = { viewModel.sendPasswordReset(email) },
+                                    contentPadding = PaddingValues(0.dp)
+                                ) {
+                                    Text(
+                                        text = "Send Reset Link →",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF0F766E)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // 5. Confirm Password (Register mode only)
+                    if (isRegisterMode) {
+                        Column {
+                            Text(
+                                text = "CONFIRM PASSWORD",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF334155),
+                                letterSpacing = 0.5.sp,
+                                modifier = Modifier.padding(bottom = 6.dp)
+                            )
+                            OutlinedTextField(
+                                value = confirmPassword,
+                                onValueChange = { confirmPassword = it },
+                                placeholder = { Text("••••••••", color = Color(0xFF94A3B8), fontSize = 13.sp) },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Lock, contentDescription = null, tint = Color(0xFF94A3B8))
+                                },
+                                trailingIcon = {
+                                    IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                                        Icon(
+                                            imageVector = if (confirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                            contentDescription = "Toggle password visibility",
+                                            tint = Color(0xFF94A3B8)
+                                        )
+                                    }
+                                },
+                                singleLine = true,
+                                visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFF0D9488),
+                                    unfocusedBorderColor = Color(0xFFE2E8F0),
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        // Terms Checkbox
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { agreedTerms = !agreedTerms }
+                        ) {
+                            Checkbox(
+                                checked = agreedTerms,
+                                onCheckedChange = { agreedTerms = it },
+                                colors = CheckboxDefaults.colors(checkedColor = Color(0xFF0D9488))
+                            )
+                            Text(
+                                text = "I agree to the Bioinformatics Research Data Governance & Compliance Terms",
+                                fontSize = 11.sp,
+                                color = Color(0xFF475569)
+                            )
+                        }
+                    } else {
+                        // Remember Workstation Checkbox
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { rememberMe = !rememberMe }
+                        ) {
+                            Checkbox(
+                                checked = rememberMe,
+                                onCheckedChange = { rememberMe = it },
+                                colors = CheckboxDefaults.colors(checkedColor = Color(0xFF0D9488))
+                            )
+                            Text(
+                                text = "Remember this workstation",
+                                fontSize = 12.sp,
+                                color = Color(0xFF475569)
+                            )
+                        }
+                    }
+
+                    // ======================== SUBMIT BUTTON ========================
+                    Button(
+                        onClick = {
+                            if (isRegisterMode) {
+                                viewModel.register(
+                                    email = email,
+                                    pass = password,
+                                    confirmPass = confirmPassword,
+                                    name = displayName,
+                                    institution = institution,
+                                    agreedTerms = agreedTerms
+                                )
+                            } else {
+                                viewModel.login(email, password)
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D9488)),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    ) {
+                        if (authState is UiState.Loading) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isRegisterMode) "Creating workspace..." else "Authenticating...",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        } else {
+                            Text(
+                                text = if (isRegisterMode) "Create Researcher Account  →" else "Sign In to GenomicsAI  →",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
                 }
             }
-        )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // ======================== FOOTER SHORTCUTS ========================
+            // Guest Researcher quick bypass (identical to web app)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        viewModel.signInAsDemo()
+                    }
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = "Skip to Dashboard as Guest Researcher",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF0D9488)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.Default.ChevronRight,
+                    contentDescription = null,
+                    tint = Color(0xFF0D9488),
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = "GenomicsAI Platform © 2026. Certified research and bioinformatics analysis.",
+                fontSize = 10.sp,
+                color = Color(0xFF94A3B8),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
